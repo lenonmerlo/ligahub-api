@@ -16,6 +16,11 @@ public sealed class Organization
 
     public static Organization Create(string name)
     {
+        return new Organization(Guid.NewGuid(), NormalizeName(name));
+    }
+
+    private static string NormalizeName(string name)
+    {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException(
@@ -32,6 +37,7 @@ public sealed class Organization
                 nameof(name));
         }
 
-        return new Organization(Guid.NewGuid(), normalizedName);
+        return normalizedName;
     }
+
 }
