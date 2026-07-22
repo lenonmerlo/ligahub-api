@@ -55,4 +55,56 @@ public sealed class OrganizationTests
 
         Assert.Equal(name, organization.Name);
     }
+
+    [Fact]
+    public void Rename_ShouldUpdateNameAndPreserveId()
+    {
+        var organization = Organization.Create("Old Name");
+        var originalId = organization.Id;
+
+        organization.Rename("  New Name  ");
+
+        Assert.Equal("New Name", organization.Name);
+        Assert.Equal(originalId, organization.Id);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("   ")]
+    public void Rename_ShouldThrowArgumentException_WhenNameIsEmpty(
+        string name)
+    {
+        var organization = Organization.Create("Original Name");
+
+        var exception = Assert.Throws<ArgumentException>(
+            () => organization.Rename(name));
+
+        Assert.Equal("name", exception.ParamName);
+        Assert.Equal("Original Name", organization.Name);
+    }
+
+    [Fact]
+    public void Rename_ShouldThrowArgumentException_WhenNameIsNull()
+    {
+        var organization = Organization.Create("Original Name");
+
+        var exception = Assert.Throws<ArgumentException>(
+            () => organization.Rename(null!));
+
+        Assert.Equal("name", exception.ParamName);
+        Assert.Equal("Original Name", organization.Name);
+    }
+
+    [Fact]
+    public void Rename_ShouldThrowArgumentException_WhenNameExceedsMaximumLength()
+    {
+        var organization = Organization.Create("Original Name");
+        var name = new string('a', Organization.MaxNameLength + 1);
+
+        var exception = Assert.Throws<ArgumentException>(() => organization.Rename(name));
+
+        Assert.Equal("name", exception.ParamName);
+        Assert.Equal("Original Name", organization.Name);
+    }
 }
