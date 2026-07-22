@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="src/LigaHub.Domain/LigaHub.Domain.csproj" Id="776b1560-886e-4f0b-a227-3e2ff782acbe" />
+  <Project Path="tests/LigaHub.Domain.UnitTests/LigaHub.Domain.UnitTests.csproj" Id="36fe0d53-d040-49f7-9bba-23bd505c66ba" />
 </Solution>
