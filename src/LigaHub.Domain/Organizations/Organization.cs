@@ -19,6 +19,11 @@ public sealed class Organization
         return new Organization(Guid.NewGuid(), NormalizeName(name));
     }
 
+    public void Rename(string name)
+    {
+        Name = NormalizeName(name);
+    }
+
     private static string NormalizeName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
