@@ -28,4 +28,11 @@ internal sealed class FakeOrganizationRepository
 
         return Task.CompletedTask;
     }
+
+    public Task<Organization?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<Organization?>(null);
+    }
 }

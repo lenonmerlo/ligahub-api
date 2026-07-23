@@ -34,4 +34,13 @@ public sealed class OrganizationRepository
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public Task<Organization?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Organizations.SingleOrDefaultAsync(
+            organization => organization.Id == id,
+            cancellationToken);
+    }
 }
