@@ -1,3 +1,4 @@
+using LigaHub.Api.ExceptionHandling;
 using LigaHub.Application.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
 using LigaHub.Infrastructure.Persistence;
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -27,6 +30,7 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<CreateOrganizationUseCase>();
 
 var app = builder.Build();
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
