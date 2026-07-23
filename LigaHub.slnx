@@ -3,6 +3,7 @@
   <Project Path="src/LigaHub.Application/LigaHub.Application.csproj" Id="771165eb-a623-4d57-9ea3-ed9e3ba666da" />
   <Project Path="src/LigaHub.Domain/LigaHub.Domain.csproj" Id="776b1560-886e-4f0b-a227-3e2ff782acbe" />
   <Project Path="src/LigaHub.Infrastructure/LigaHub.Infrastructure.csproj" Id="6fa0d30d-4081-419a-84cd-d22c9dc6ff4d" />
+  <Project Path="tests/LigaHub.Api.FunctionalTests/LigaHub.Api.FunctionalTests.csproj" Id="04ab4e6f-26c3-4264-a3c1-710baa622824" />
   <Project Path="tests/LigaHub.Application.UnitTests/LigaHub.Application.UnitTests.csproj" Id="3b54cc52-3e09-4569-a5d8-dd9697a229d7" />
   <Project Path="tests/LigaHub.Domain.UnitTests/LigaHub.Domain.UnitTests.csproj" Id="36fe0d53-d040-49f7-9bba-23bd505c66ba" />
   <Project Path="tests/LigaHub.Infrastructure.IntegrationTests/LigaHub.Infrastructure.IntegrationTests.csproj" Id="03ffc08a-47c5-48f0-a341-bb93ca5c0be0" />

@@ -28,7 +28,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
 
             ArgumentException => (
             StatusCodes.Status400BadRequest,
-            "Invlaid request",
+            "Invalid request",
             exception.Message),
 
             _ => (
@@ -46,8 +46,8 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         else
         {
             _logger.LogWarning(
-                exception,
-                "An request could not be processed.");
+                "A request could not be processed: {Message}",
+                exception.Message);
         }
 
         var problemDetails = new ProblemDetails
