@@ -1,0 +1,29 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@LigaHub.Api_HostAddress = https://localhost:5027
+
+### Create organization
+
+POST {{LigaHub.Api_HostAddress}}/api/organizations
+Content-Type: application/json
+
+{
+  "name": "Liga Regional"
+}
+
+### Duplicate organization name
+
+POST {{LigaHub.Api_HostAddress}}/api/organizations
+Content-Type: application/json
+
+{
+  "name": "Liga Regional"
+}
+
+### Invalid organization name
+
+POST {{LigaHub.Api_HostAddress}}/api/organizations
+Content-Type: application/json
+
+{
+  "name": " "
+}
