@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="src/LigaHub.Api/LigaHub.Api.csproj" Id="35c4d87b-18e5-4f38-9ebd-5bcaa0aa44d8" />
   <Project Path="src/LigaHub.Application/LigaHub.Application.csproj" Id="771165eb-a623-4d57-9ea3-ed9e3ba666da" />
   <Project Path="src/LigaHub.Domain/LigaHub.Domain.csproj" Id="776b1560-886e-4f0b-a227-3e2ff782acbe" />
   <Project Path="src/LigaHub.Infrastructure/LigaHub.Infrastructure.csproj" Id="6fa0d30d-4081-419a-84cd-d22c9dc6ff4d" />
