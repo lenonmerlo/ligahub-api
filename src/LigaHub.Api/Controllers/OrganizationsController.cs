@@ -1,6 +1,7 @@
 ﻿using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
+using LigaHub.Application.Organizations.ListOrganizations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LigaHub.Api.Controllers;
@@ -11,16 +12,53 @@ public sealed class OrganizationsController : ControllerBase
 {
     private readonly CreateOrganizationUseCase _useCase;
     private readonly GetOrganizationByIdUseCase _getByIdUseCase;
+    private readonly ListOrganizationsUseCase _listUseCase;
 
     public OrganizationsController(
         CreateOrganizationUseCase useCase,
-        GetOrganizationByIdUseCase getByIdUseCase)
+        GetOrganizationByIdUseCase getByIdUseCase,
+        ListOrganizationsUseCase listUseCase)
     {
         _useCase = useCase
             ?? throw new ArgumentNullException(nameof(useCase));
 
         _getByIdUseCase = getByIdUseCase
             ?? throw new ArgumentNullException(nameof(getByIdUseCase));
+
+        _listUseCase = listUseCase
+            ?? throw new ArgumentNullException(nameof(listUseCase));
+    }
+
+    [HttpGet]
+    [ProducesResponseType<ListOrganizationsResponse>(
+        StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ListOrganizationsResponse>> ListAsync(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new ListOrganizationsQuery(
+            page,
+            pageSize);
+
+        var result = await _listUseCase.ExecuteAsync(
+            query,
+            cancellationToken);
+
+        var items = result.Items
+            .Select(item => new OrganizationListItemResponse(
+                item.Id,
+                item.Name))
+            .ToArray();
+
+        return Ok(new ListOrganizationsResponse(
+            items,
+            result.Page,
+            result.PageSize,
+            result.TotalCount,
+            result.TotalPages));
     }
 
     [HttpGet("{id:guid}")]
