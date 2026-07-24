@@ -12,6 +12,10 @@ namespace LigaHub.Application.Organizations
             Organization organization,
             CancellationToken cancellationToken = default);
 
+        Task UpdateAsync(
+            Organization organization,
+            CancellationToken cancellationToken = default);
+
         Task<Organization?> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default);

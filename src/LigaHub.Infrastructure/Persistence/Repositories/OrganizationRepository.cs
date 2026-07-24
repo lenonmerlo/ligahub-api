@@ -35,6 +35,15 @@ public sealed class OrganizationRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task UpdateAsync(
+        Organization organization,
+        CancellationToken cancellationToken = default)
+    {
+        _dbContext.Organizations.Update(organization);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public Task<Organization?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
