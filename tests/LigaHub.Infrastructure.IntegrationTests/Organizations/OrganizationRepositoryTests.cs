@@ -62,6 +62,56 @@ public sealed class OrganizationRepositoryTests
         Assert.False(missingNameFound);
     }
 
+    [Fact]
+    public async Task ListAsync_ShouldReturnOrderedPage()
+    {
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.ExecuteDeleteAsync();
+
+        var firstOrganization = Organization.Create("Liga A");
+        var secondOrganization = Organization.Create("Liga B");
+        var thirdOrganization = Organization.Create("Liga C");
+
+        dbContext.Organizations.AddRange(
+            thirdOrganization,
+            firstOrganization,
+            secondOrganization);
+
+        await dbContext.SaveChangesAsync();
+
+        var repository = new OrganizationRepository(dbContext);
+
+        var organizations = await repository.ListAsync(
+            skip: 1,
+            take: 1);
+
+        var organization = Assert.Single(organizations);
+
+        Assert.Equal(secondOrganization.Id, organization.Id);
+        Assert.Equal("Liga B", organization.Name);
+    }
+
+    [Fact]
+    public async Task CountAsync_ShouldReturnOrganizationCount()
+    {
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.ExecuteDeleteAsync();
+
+        dbContext.Organizations.AddRange(
+            Organization.Create("Liga A"),
+            Organization.Create("Liga B"));
+
+        await dbContext.SaveChangesAsync();
+
+        var repository = new OrganizationRepository(dbContext);
+
+        var count = await repository.CountAsync();
+
+        Assert.Equal(2, count);
+    }
+
     private async Task<LigaHubDbContext> CreateDbContextAsync()
     {
         var options = new DbContextOptionsBuilder<LigaHubDbContext>()

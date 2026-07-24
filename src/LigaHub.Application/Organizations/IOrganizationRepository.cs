@@ -15,5 +15,13 @@ namespace LigaHub.Application.Organizations
         Task<Organization?> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default);
+
+        Task<IReadOnlyList<Organization>> ListAsync(
+            int skip,
+            int take,
+            CancellationToken cancellationToken = default);
+
+        Task<int> CountAsync(
+            CancellationToken cancellationToken = default);
     }
 }

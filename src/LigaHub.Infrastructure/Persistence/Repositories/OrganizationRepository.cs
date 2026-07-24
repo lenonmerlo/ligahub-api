@@ -43,4 +43,23 @@ public sealed class OrganizationRepository
             organization => organization.Id == id,
             cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Organization>> ListAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Organizations
+            .AsNoTracking()
+            .OrderBy(organization => organization.Name)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Organizations.CountAsync(cancellationToken);
+    }
 }
