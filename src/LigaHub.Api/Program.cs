@@ -1,6 +1,7 @@
 using LigaHub.Api.ExceptionHandling;
 using LigaHub.Application.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
+using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Infrastructure.Persistence;
 using LigaHub.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ builder.Services.AddScoped<
     OrganizationRepository>();
 
 builder.Services.AddScoped<CreateOrganizationUseCase>();
+builder.Services.AddScoped<GetOrganizationByIdUseCase>();
 
 var app = builder.Build();
 app.UseExceptionHandler();
@@ -36,6 +38,13 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint(
+            "/openapi/v1.json",
+            "LigaHub API v1");
+    });
 }
 
 if (!app.Environment.IsEnvironment("Testing"))

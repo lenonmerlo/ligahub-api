@@ -1,31 +1,25 @@
 ﻿using LigaHub.Application.Organizations;
 using LigaHub.Domain.Organizations;
 
-namespace LigaHub.Application.UnitTests.Organizations.CreateOrganization;
+namespace LigaHub.Application.UnitTests.Organizations.GetOrganizationById;
 
-internal sealed class FakeOrganizationRepository
-    : IOrganizationRepository
+internal sealed class FakeOrganizationRepository : IOrganizationRepository
 {
-    public bool NameExists { get; set; }
+    public Organization? OrganizationToReturn { get; set; }
 
-    public Organization? AddedOrganization { get; private set; }
-
-    public int AddCalls { get; private set; }
+    public Guid? RequestedId { get; private set; }
 
     public Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(NameExists);
+        return Task.FromResult(false);
     }
 
     public Task AddAsync(
         Organization organization,
         CancellationToken cancellationToken = default)
     {
-        AddedOrganization = organization;
-        AddCalls++;
-
         return Task.CompletedTask;
     }
 
@@ -33,6 +27,8 @@ internal sealed class FakeOrganizationRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<Organization?>(null);
+        RequestedId = id;
+
+        return Task.FromResult(OrganizationToReturn);
     }
 }
