@@ -21,7 +21,7 @@ public sealed class ListOrganizationsUseCase
 
         if (query.Page < 1)
         {
-            throw new ArgumentNullException(
+            throw new ArgumentOutOfRangeException(
                 nameof(query.Page),
                 "Page must be greater than zero.");
         }
