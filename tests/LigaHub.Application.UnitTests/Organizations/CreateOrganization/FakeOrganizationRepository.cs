@@ -35,4 +35,18 @@ internal sealed class FakeOrganizationRepository
     {
         return Task.FromResult<Organization?>(null);
     }
+
+    public Task<IReadOnlyList<Organization>> ListAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IReadOnlyList<Organization>>([]);
+    }
+
+    public Task<int> CountAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(0);
+    }
 }
