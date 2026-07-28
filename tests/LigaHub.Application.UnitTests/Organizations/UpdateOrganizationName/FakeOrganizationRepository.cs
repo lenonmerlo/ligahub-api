@@ -1,24 +1,28 @@
 ﻿using LigaHub.Application.Organizations;
 using LigaHub.Domain.Organizations;
 
-namespace LigaHub.Application.UnitTests.Organizations.ListOrganizations;
+namespace LigaHub.Application.UnitTests.Organizations.UpdateOrganizationName;
 
 internal sealed class FakeOrganizationRepository
     : IOrganizationRepository
 {
-    public IReadOnlyList<Organization> Organizations { get; set; } = [];
+    public Organization? OrganizationToReturn { get; set; }
 
-    public int TotalCount { get; set; }
+    public bool NameExists { get; set; }
 
-    public int? RequestedSkip { get; private set; }
+    public Organization? UpdatedOrganization { get; private set; }
 
-    public int? RequestedTake { get; private set; }
+    public int UpdateCalls { get; private set; }
+
+    public int ExistsByNameCalls { get; private set; }
 
     public Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        ExistsByNameCalls++;
+
+        return Task.FromResult(NameExists);
     }
 
     public Task AddAsync(
@@ -29,9 +33,12 @@ internal sealed class FakeOrganizationRepository
     }
 
     public Task UpdateAsync(
-    Organization organization,
-    CancellationToken cancellationToken = default)
+        Organization organization,
+        CancellationToken cancellationToken = default)
     {
+        UpdatedOrganization = organization;
+        UpdateCalls++;
+
         return Task.CompletedTask;
     }
 
@@ -39,7 +46,7 @@ internal sealed class FakeOrganizationRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<Organization?>(null);
+        return Task.FromResult(OrganizationToReturn);
     }
 
     public Task<IReadOnlyList<Organization>> ListAsync(
@@ -47,15 +54,12 @@ internal sealed class FakeOrganizationRepository
         int take,
         CancellationToken cancellationToken = default)
     {
-        RequestedSkip = skip;
-        RequestedTake = take;
-
-        return Task.FromResult(Organizations);
+        return Task.FromResult<IReadOnlyList<Organization>>([]);
     }
 
     public Task<int> CountAsync(
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(TotalCount);
+        return Task.FromResult(0);
     }
 }

@@ -112,6 +112,35 @@ public sealed class OrganizationRepositoryTests
         Assert.Equal(2, count);
     }
 
+    [Fact]
+    public async Task UpdateAsync_ShouldPersistOrganizationChanges()
+    {
+        var organization = Organization.Create("Old Name");
+
+        await using (var dbContext = await CreateDbContextAsync())
+        {
+            await dbContext.Organizations.ExecuteDeleteAsync();
+
+            var repository = new OrganizationRepository(dbContext);
+
+            await repository.AddAsync(organization);
+
+            organization.Rename("New Name");
+
+            await repository.UpdateAsync(organization);
+        }
+
+        await using var verificationContext =
+            await CreateDbContextAsync();
+
+        var persistedOrganization = await verificationContext
+            .Organizations
+            .AsNoTracking()
+            .SingleAsync(item => item.Id == organization.Id);
+
+        Assert.Equal("New Name", persistedOrganization.Name);
+    }
+
     private async Task<LigaHubDbContext> CreateDbContextAsync()
     {
         var options = new DbContextOptionsBuilder<LigaHubDbContext>()
