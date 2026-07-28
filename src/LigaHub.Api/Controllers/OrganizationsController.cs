@@ -1,5 +1,6 @@
 ﻿using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
+using LigaHub.Application.Organizations.DeleteOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
 using LigaHub.Application.Organizations.UpdateOrganizationName;
@@ -15,12 +16,14 @@ public sealed class OrganizationsController : ControllerBase
     private readonly GetOrganizationByIdUseCase _getByIdUseCase;
     private readonly ListOrganizationsUseCase _listUseCase;
     private readonly UpdateOrganizationNameUseCase _updateNameUseCase;
+    private readonly DeleteOrganizationUseCase _deleteUseCase;
 
     public OrganizationsController(
         CreateOrganizationUseCase useCase,
         GetOrganizationByIdUseCase getByIdUseCase,
         ListOrganizationsUseCase listUseCase,
-        UpdateOrganizationNameUseCase updateNameUse)
+        UpdateOrganizationNameUseCase updateNameUse,
+        DeleteOrganizationUseCase deleteUseCase)
     {
         _useCase = useCase
             ?? throw new ArgumentNullException(nameof(useCase));
@@ -33,6 +36,9 @@ public sealed class OrganizationsController : ControllerBase
 
         _updateNameUseCase = updateNameUse
             ?? throw new ArgumentNullException(nameof(updateNameUse));
+
+        _deleteUseCase = deleteUseCase
+            ?? throw new ArgumentNullException(nameof(deleteUseCase));
     }
 
     [HttpGet]
@@ -154,5 +160,30 @@ public sealed class OrganizationsController : ControllerBase
         return Ok(new UpdateOrganizationNameResponse(
             result.Id,
             result.Name));
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteOrganizationCommand(id);
+
+        var deleted = await _deleteUseCase.ExecuteAsync(
+            command,
+            cancellationToken);
+
+        if (!deleted)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Organization not found",
+                detail: $"Organization '{id}' was not found.");
+        }
+
+        return NoContent();
     }
 }
