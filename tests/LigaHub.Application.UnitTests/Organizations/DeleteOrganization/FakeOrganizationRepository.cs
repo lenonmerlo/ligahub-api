@@ -1,45 +1,47 @@
 ﻿using LigaHub.Application.Organizations;
 using LigaHub.Domain.Organizations;
 
-namespace LigaHub.Application.UnitTests.Organizations.CreateOrganization;
+namespace LigaHub.Application.UnitTests.Organizations.DeleteOrganization;
 
 internal sealed class FakeOrganizationRepository
     : IOrganizationRepository
 {
-    public bool NameExists { get; set; }
+    public Organization? OrganizationToReturn { get; set; }
 
-    public Organization? AddedOrganization { get; private set; }
+    public Organization? DeletedOrganization { get; private set; }
 
-    public int AddCalls { get; private set; }
+    public Guid? RequestedId { get; private set; }
+
+    public int DeleteCalls { get; private set; }
 
     public Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(NameExists);
+        return Task.FromResult(false);
     }
 
     public Task AddAsync(
         Organization organization,
         CancellationToken cancellationToken = default)
     {
-        AddedOrganization = organization;
-        AddCalls++;
-
         return Task.CompletedTask;
     }
 
     public Task UpdateAsync(
-    Organization organization,
-    CancellationToken cancellationToken = default)
+        Organization organization,
+        CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(
-    Organization organization,
-    CancellationToken cancellationToken = default)
+        Organization organization,
+        CancellationToken cancellationToken = default)
     {
+        DeletedOrganization = organization;
+        DeleteCalls++;
+
         return Task.CompletedTask;
     }
 
@@ -47,7 +49,9 @@ internal sealed class FakeOrganizationRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<Organization?>(null);
+        RequestedId = id;
+
+        return Task.FromResult(OrganizationToReturn);
     }
 
     public Task<IReadOnlyList<Organization>> ListAsync(
@@ -55,7 +59,10 @@ internal sealed class FakeOrganizationRepository
         int take,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<IReadOnlyList<Organization>>([]);
+        IReadOnlyList<Organization> organizations =
+            Array.Empty<Organization>();
+
+        return Task.FromResult(organizations);
     }
 
     public Task<int> CountAsync(

@@ -1,6 +1,7 @@
 using LigaHub.Api.ExceptionHandling;
 using LigaHub.Application.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
+using LigaHub.Application.Organizations.DeleteOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
 using LigaHub.Application.Organizations.UpdateOrganizationName;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<CreateOrganizationUseCase>();
 builder.Services.AddScoped<GetOrganizationByIdUseCase>();
 builder.Services.AddScoped<ListOrganizationsUseCase>();
 builder.Services.AddScoped<UpdateOrganizationNameUseCase>();
+builder.Services.AddScoped<DeleteOrganizationUseCase>();
 
 
 var app = builder.Build();
