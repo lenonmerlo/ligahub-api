@@ -2,6 +2,7 @@
 using LigaHub.Application.Organizations.CreateOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
+using LigaHub.Application.Organizations.UpdateOrganizationName;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LigaHub.Api.Controllers;
@@ -13,11 +14,13 @@ public sealed class OrganizationsController : ControllerBase
     private readonly CreateOrganizationUseCase _useCase;
     private readonly GetOrganizationByIdUseCase _getByIdUseCase;
     private readonly ListOrganizationsUseCase _listUseCase;
+    private readonly UpdateOrganizationNameUseCase _updateNameUseCase;
 
     public OrganizationsController(
         CreateOrganizationUseCase useCase,
         GetOrganizationByIdUseCase getByIdUseCase,
-        ListOrganizationsUseCase listUseCase)
+        ListOrganizationsUseCase listUseCase,
+        UpdateOrganizationNameUseCase updateNameUse)
     {
         _useCase = useCase
             ?? throw new ArgumentNullException(nameof(useCase));
@@ -27,6 +30,9 @@ public sealed class OrganizationsController : ControllerBase
 
         _listUseCase = listUseCase
             ?? throw new ArgumentNullException(nameof(listUseCase));
+
+        _updateNameUseCase = updateNameUse
+            ?? throw new ArgumentNullException(nameof(updateNameUse));
     }
 
     [HttpGet]
@@ -113,5 +119,40 @@ public sealed class OrganizationsController : ControllerBase
         return Created(
             $"/api/organizations/{response.Id}",
             response);
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType<UpdateOrganizationNameResponse>(
+        StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<UpdateOrganizationNameResponse>> UpdateNameAsync(
+        Guid id,
+        [FromBody] UpdateOrganizationNameRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateOrganizationNameCommand(
+            id,
+            request.Name);
+
+        var result = await _updateNameUseCase.ExecuteAsync(
+            command,
+            cancellationToken);
+
+        if (result is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Organization not found",
+                detail: $"Organization '{id}' was not found.");
+        }
+
+        return Ok(new UpdateOrganizationNameResponse(
+            result.Id,
+            result.Name));
     }
 }

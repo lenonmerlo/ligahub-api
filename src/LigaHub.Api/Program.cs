@@ -3,6 +3,7 @@ using LigaHub.Application.Organizations;
 using LigaHub.Application.Organizations.CreateOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
+using LigaHub.Application.Organizations.UpdateOrganizationName;
 using LigaHub.Infrastructure.Persistence;
 using LigaHub.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,8 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<CreateOrganizationUseCase>();
 builder.Services.AddScoped<GetOrganizationByIdUseCase>();
 builder.Services.AddScoped<ListOrganizationsUseCase>();
+builder.Services.AddScoped<UpdateOrganizationNameUseCase>();
+
 
 var app = builder.Build();
 app.UseExceptionHandler();
