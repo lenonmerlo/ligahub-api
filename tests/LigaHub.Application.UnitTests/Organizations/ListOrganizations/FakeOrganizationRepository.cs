@@ -35,6 +35,13 @@ internal sealed class FakeOrganizationRepository
         return Task.CompletedTask;
     }
 
+    public Task DeleteAsync(
+    Organization organization,
+    CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task<Organization?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
