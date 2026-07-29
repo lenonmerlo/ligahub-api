@@ -26,7 +26,7 @@ public sealed class TeamRepository : ITeamRepository
             cancellationToken);
     }
 
-    public async Task TaskAsync(
+    public async Task AddAsync(
         Team team,
         CancellationToken cancellationToken = default)
     {
@@ -35,15 +35,5 @@ public sealed class TeamRepository : ITeamRepository
             cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    Task ITeamRepository.AddAsync(Team team, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<bool> ITeamRepository.ExistsByNameAsync(Guid organizationId, string name, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
     }
 }
