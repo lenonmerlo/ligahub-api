@@ -12,4 +12,9 @@ public interface ITeamRepository
     Task AddAsync(
         Team team,
         CancellationToken cancellationToken = default);
+
+    Task<Team?> GetByIdAsync(
+        Guid organizationId,
+        Guid id,
+        CancellationToken cancellationToken = default);
 }
