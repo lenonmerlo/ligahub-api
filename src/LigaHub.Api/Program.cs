@@ -5,6 +5,8 @@ using LigaHub.Application.Organizations.DeleteOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
 using LigaHub.Application.Organizations.UpdateOrganizationName;
+using LigaHub.Application.Teams;
+using LigaHub.Application.Teams.CreateTeam;
 using LigaHub.Infrastructure.Persistence;
 using LigaHub.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -31,11 +33,17 @@ builder.Services.AddScoped<
     IOrganizationRepository,
     OrganizationRepository>();
 
+builder.Services.AddScoped<
+    ITeamRepository,
+    TeamRepository>();
+
 builder.Services.AddScoped<CreateOrganizationUseCase>();
 builder.Services.AddScoped<GetOrganizationByIdUseCase>();
 builder.Services.AddScoped<ListOrganizationsUseCase>();
 builder.Services.AddScoped<UpdateOrganizationNameUseCase>();
 builder.Services.AddScoped<DeleteOrganizationUseCase>();
+
+builder.Services.AddScoped<CreateTeamUseCase>();
 
 
 var app = builder.Build();

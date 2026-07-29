@@ -1,4 +1,5 @@
 ﻿using LigaHub.Application.Organizations;
+using LigaHub.Application.Teams;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,11 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             OrganizationNameAlreadyExistsException => (
             StatusCodes.Status409Conflict,
             "Organization name conflict",
+            exception.Message),
+
+            TeamNameAlreadyExistsException => (
+            StatusCodes.Status409Conflict,
+            "Team name conflict",
             exception.Message),
 
             ArgumentException => (
