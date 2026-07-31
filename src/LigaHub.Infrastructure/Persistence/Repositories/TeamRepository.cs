@@ -48,4 +48,29 @@ public sealed class TeamRepository : ITeamRepository
                 team.Id == id,
             cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Team>> ListAsync(
+        Guid ornigazationId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Teams
+            .AsNoTracking()
+            .Where(team => team.OrganizationId == ornigazationId)
+            .OrderBy(team => team.Name)
+            .ThenBy(team => team.Id)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(
+        Guid organizationId,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Teams.CountAsync(
+            team => team.OrganizationId == organizationId,
+            cancellationToken);
+    }
 }
