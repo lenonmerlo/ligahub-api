@@ -18,6 +18,41 @@ public sealed class TeamRepositoryTests
     }
 
     [Fact]
+    public async Task GetByIdAsync_ShouldScopeTeamToOrganization()
+    {
+        var firstOrganization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var secondOrganization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var team = Team.Create(
+            firstOrganization.Id,
+            $"Time {Guid.NewGuid():N}");
+
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.AddRangeAsync(
+            firstOrganization,
+            secondOrganization);
+        await dbContext.SaveChangesAsync();
+
+        var repository = new TeamRepository(dbContext);
+
+        await repository.AddAsync(team);
+
+        var teamInFirstOrganization = await repository.GetByIdAsync(
+            firstOrganization.Id,
+            team.Id);
+
+        var teamInSecondOrganization = await repository.GetByIdAsync(
+            secondOrganization.Id,
+            team.Id);
+
+        Assert.NotNull(teamInFirstOrganization);
+        Assert.Equal(team.Id, teamInFirstOrganization.Id);
+        Assert.Null(teamInSecondOrganization);
+    }
+
+    [Fact]
     public async Task AddAsync_ShouldPersistTeam()
     {
         var organization = Organization.Create(
