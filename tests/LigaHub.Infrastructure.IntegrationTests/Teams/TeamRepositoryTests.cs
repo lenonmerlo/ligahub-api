@@ -18,6 +18,59 @@ public sealed class TeamRepositoryTests
     }
 
     [Fact]
+    public async Task ListAsyncAndCountAsync_ShouldScopeAndPaginateTeams()
+    {
+        var firstOrganization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var secondOrganization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+
+        var firstTeam = Team.Create(
+            firstOrganization.Id,
+            $"A {Guid.NewGuid():N}");
+        var secondTeam = Team.Create(
+            firstOrganization.Id,
+            $"B {Guid.NewGuid():N}");
+        var thirdTeam = Team.Create(
+            firstOrganization.Id,
+            $"C {Guid.NewGuid():N}");
+        var otherOrganizationTeam = Team.Create(
+            secondOrganization.Id,
+            $"A {Guid.NewGuid():N}");
+
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.AddRangeAsync(
+            firstOrganization,
+            secondOrganization);
+        await dbContext.SaveChangesAsync();
+
+        var repository = new TeamRepository(dbContext);
+
+        await repository.AddAsync(firstTeam);
+        await repository.AddAsync(secondTeam);
+        await repository.AddAsync(thirdTeam);
+        await repository.AddAsync(otherOrganizationTeam);
+
+        var teams = await repository.ListAsync(
+            firstOrganization.Id,
+            skip: 1,
+            take: 1);
+
+        var firstOrganizationCount = await repository.CountAsync(
+            firstOrganization.Id);
+
+        var secondOrganizationCount = await repository.CountAsync(
+            secondOrganization.Id);
+
+        var listedTeam = Assert.Single(teams);
+
+        Assert.Equal(secondTeam.Id, listedTeam.Id);
+        Assert.Equal(3, firstOrganizationCount);
+        Assert.Equal(1, secondOrganizationCount);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldScopeTeamToOrganization()
     {
         var firstOrganization = Organization.Create(

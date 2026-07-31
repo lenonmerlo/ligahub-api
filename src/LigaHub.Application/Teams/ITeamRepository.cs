@@ -17,4 +17,14 @@ public interface ITeamRepository
         Guid organizationId,
         Guid id,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Team>> ListAsync(
+        Guid organizationId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(
+        Guid organizationId,
+        CancellationToken cancellationToken = default);
 }

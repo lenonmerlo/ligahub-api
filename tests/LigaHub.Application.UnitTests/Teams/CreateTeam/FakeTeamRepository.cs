@@ -46,4 +46,22 @@ internal sealed class FakeTeamRepository : ITeamRepository
     {
         return Task.FromResult<Team?>(null);
     }
+
+    public Task<IReadOnlyList<Team>> ListAsync(
+    Guid organizationId,
+    int skip,
+    int take,
+    CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<Team> teams = Array.Empty<Team>();
+
+        return Task.FromResult(teams);
+    }
+
+    public Task<int> CountAsync(
+        Guid organizationId,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(0);
+    }
 }
