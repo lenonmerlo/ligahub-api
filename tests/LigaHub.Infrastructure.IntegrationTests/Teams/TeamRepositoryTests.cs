@@ -18,6 +18,42 @@ public sealed class TeamRepositoryTests
     }
 
     [Fact]
+    public async Task UpdateAsync_ShouldPersistTeamChanges()
+    {
+        var organization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var team = Team.Create(
+            organization.Id,
+            $"Time {Guid.NewGuid():N}");
+        var updatedName = $"Time Atualizado {Guid.NewGuid():N}";
+
+        await using (var dbContext = await CreateDbContextAsync())
+        {
+            await dbContext.Organizations.AddAsync(organization);
+            await dbContext.SaveChangesAsync();
+
+            var repository = new TeamRepository(dbContext);
+
+            await repository.AddAsync(team);
+
+            team.Rename(updatedName);
+
+            await repository.UpdateAsync(team);
+        }
+
+        await using var verificationContext =
+            await CreateDbContextAsync();
+
+        var persistedTeam = await verificationContext
+            .Teams
+            .AsNoTracking()
+            .SingleAsync(item => item.Id == team.Id);
+
+        Assert.Equal(updatedName, persistedTeam.Name);
+        Assert.Equal(organization.Id, persistedTeam.OrganizationId);
+    }
+
+    [Fact]
     public async Task ListAsyncAndCountAsync_ShouldScopeAndPaginateTeams()
     {
         var firstOrganization = Organization.Create(
