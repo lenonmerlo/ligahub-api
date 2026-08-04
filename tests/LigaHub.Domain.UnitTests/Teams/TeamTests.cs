@@ -16,6 +16,37 @@ public sealed class TeamTests
         Assert.NotEqual(Guid.Empty, team.Id);
         Assert.Equal(organizationId, team.OrganizationId);
         Assert.Equal("Time Regional", team.Name);
+        Assert.Equal(Sport.Volleyball, team.Sport);
+    }
+
+    [Theory]
+    [InlineData(Sport.Volleyball)]
+    [InlineData(Sport.Football)]
+    [InlineData(Sport.Basketball)]
+    public void Create_ShouldAssignSport_WhenSportIsValid(
+    Sport sport)
+    {
+        var team = Team.Create(
+            Guid.NewGuid(),
+            "Time Regional",
+            sport);
+
+        Assert.Equal(sport, team.Sport);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(999)]
+    public void Create_ShouldThrowArgumentOutOfRangeException_WhenSportIsInvalid(
+        int sportValue)
+    {
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(
+            () => Team.Create(
+                Guid.NewGuid(),
+                "Time Regional",
+                (Sport)sportValue));
+
+        Assert.Equal("sport", exception.ParamName);
     }
 
     [Fact]
@@ -86,6 +117,7 @@ public sealed class TeamTests
         Assert.Equal("New Name", team.Name);
         Assert.Equal(originalId, team.Id);
         Assert.Equal(organizationId, team.OrganizationId);
+        Assert.Equal(Sport.Volleyball, team.Sport);
     }
 
     [Theory]
