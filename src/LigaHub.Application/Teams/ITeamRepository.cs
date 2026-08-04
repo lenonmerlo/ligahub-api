@@ -17,6 +17,10 @@ public interface ITeamRepository
         Team team,
         CancellationToken cancellationToken = default);
 
+    Task DeleteAsync(
+        Team team,
+        CancellationToken cancellationToken = default);
+
     Task<Team?> GetByIdAsync(
         Guid organizationId,
         Guid id,

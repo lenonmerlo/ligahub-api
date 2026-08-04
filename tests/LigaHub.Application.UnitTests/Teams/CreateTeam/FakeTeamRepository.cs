@@ -46,6 +46,13 @@ internal sealed class FakeTeamRepository : ITeamRepository
         return Task.CompletedTask;
     }
 
+    public Task DeleteAsync(
+    Team team,
+    CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task<Team?> GetByIdAsync(
     Guid organizationId,
     Guid id,
