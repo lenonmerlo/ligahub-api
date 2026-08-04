@@ -29,7 +29,8 @@ public sealed class CreateTeamUseCase
 
         var team = Team.Create(
             command.OrganizationId,
-            command.Name);
+            command.Name,
+            command.Sport);
 
         var organization = await _organizationRepository.GetByIdAsync(
             command.OrganizationId,
@@ -57,6 +58,7 @@ public sealed class CreateTeamUseCase
         return new CreateTeamResult(
             team.Id,
             team.OrganizationId,
-            team.Name);
+            team.Name,
+            team.Sport);
     }
 }

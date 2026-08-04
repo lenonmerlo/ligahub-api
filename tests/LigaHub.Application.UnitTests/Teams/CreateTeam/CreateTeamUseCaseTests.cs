@@ -1,6 +1,7 @@
 ﻿using LigaHub.Application.Teams;
 using LigaHub.Application.Teams.CreateTeam;
 using LigaHub.Domain.Organizations;
+using LigaHub.Domain.Teams;
 
 namespace LigaHub.Application.UnitTests.Teams.CreateTeam;
 
@@ -20,7 +21,8 @@ public sealed class CreateTeamUseCaseTests
             teamRepository);
         var command = new CreateTeamCommand(
             organization.Id,
-            "  Time Regional  ");
+            "  Time Regional  ",
+            Sport.Basketball);
 
         var result = await useCase.ExecuteAsync(command);
 
@@ -28,6 +30,10 @@ public sealed class CreateTeamUseCaseTests
         Assert.NotEqual(Guid.Empty, result.Id);
         Assert.Equal(organization.Id, result.OrganizationId);
         Assert.Equal("Time Regional", result.Name);
+        Assert.Equal(Sport.Basketball, result.Sport);
+        Assert.Equal(
+            Sport.Basketball,
+            teamRepository.AddedTeam?.Sport);
         Assert.Equal(organization.Id, organizationRepository.RequestedId);
         Assert.Equal(organization.Id, teamRepository.RequestedOrganizationId);
         Assert.Equal("Time Regional", teamRepository.RequestedName);
