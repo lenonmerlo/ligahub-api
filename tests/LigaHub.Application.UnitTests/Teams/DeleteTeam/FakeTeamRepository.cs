@@ -1,21 +1,19 @@
 ﻿using LigaHub.Application.Teams;
 using LigaHub.Domain.Teams;
 
-namespace LigaHub.Application.UnitTests.Teams.ListTeams;
+namespace LigaHub.Application.UnitTests.Teams.DeleteTeam;
 
 internal sealed class FakeTeamRepository : ITeamRepository
 {
-    public IReadOnlyList<Team> Teams { get; set; } = [];
+    public Team? TeamToReturn { get; set; }
 
-    public int TotalCount { get; set; }
+    public Team? DeletedTeam { get; private set; }
 
-    public Guid? RequestedListOrganizationId { get; private set; }
+    public Guid? RequestedOrganizationId { get; private set; }
 
-    public Guid? RequestedCountOrganizationId { get; private set; }
+    public Guid? RequestedId { get; private set; }
 
-    public int? RequestedSkip { get; private set; }
-
-    public int? RequestedTake { get; private set; }
+    public int DeleteCalls { get; private set; }
 
     public Task<bool> ExistsByNameAsync(
         Guid organizationId,
@@ -33,16 +31,19 @@ internal sealed class FakeTeamRepository : ITeamRepository
     }
 
     public Task UpdateAsync(
-    Team team,
-    CancellationToken cancellationToken = default)
+        Team team,
+        CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(
-    Team team,
-    CancellationToken cancellationToken = default)
+        Team team,
+        CancellationToken cancellationToken = default)
     {
+        DeletedTeam = team;
+        DeleteCalls++;
+
         return Task.CompletedTask;
     }
 
@@ -51,7 +52,10 @@ internal sealed class FakeTeamRepository : ITeamRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<Team?>(null);
+        RequestedOrganizationId = organizationId;
+        RequestedId = id;
+
+        return Task.FromResult(TeamToReturn);
     }
 
     public Task<IReadOnlyList<Team>> ListAsync(
@@ -60,19 +64,15 @@ internal sealed class FakeTeamRepository : ITeamRepository
         int take,
         CancellationToken cancellationToken = default)
     {
-        RequestedListOrganizationId = organizationId;
-        RequestedSkip = skip;
-        RequestedTake = take;
+        IReadOnlyList<Team> teams = Array.Empty<Team>();
 
-        return Task.FromResult(Teams);
+        return Task.FromResult(teams);
     }
 
     public Task<int> CountAsync(
         Guid organizationId,
         CancellationToken cancellationToken = default)
     {
-        RequestedCountOrganizationId = organizationId;
-
-        return Task.FromResult(TotalCount);
+        return Task.FromResult(0);
     }
 }

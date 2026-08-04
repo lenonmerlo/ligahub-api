@@ -18,6 +18,43 @@ public sealed class TeamRepositoryTests
     }
 
     [Fact]
+    public async Task DeleteAsync_ShouldRemoveTeam()
+    {
+        var organization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var team = Team.Create(
+            organization.Id,
+            $"Time {Guid.NewGuid():N}");
+
+        await using (var dbContext = await CreateDbContextAsync())
+        {
+            await dbContext.Organizations.AddAsync(organization);
+            await dbContext.SaveChangesAsync();
+
+            var repository = new TeamRepository(dbContext);
+
+            await repository.AddAsync(team);
+            await repository.DeleteAsync(team);
+        }
+
+        await using var verificationContext =
+            await CreateDbContextAsync();
+
+        var teamExists = await verificationContext
+            .Teams
+            .AsNoTracking()
+            .AnyAsync(item => item.Id == team.Id);
+
+        var organizationExists = await verificationContext
+            .Organizations
+            .AsNoTracking()
+            .AnyAsync(item => item.Id == organization.Id);
+
+        Assert.False(teamExists);
+        Assert.True(organizationExists);
+    }
+
+    [Fact]
     public async Task UpdateAsync_ShouldPersistTeamChanges()
     {
         var organization = Organization.Create(

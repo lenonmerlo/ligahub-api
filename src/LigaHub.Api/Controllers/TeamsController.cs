@@ -1,5 +1,6 @@
 ﻿using LigaHub.Api.Contracts.Teams;
 using LigaHub.Application.Teams.CreateTeam;
+using LigaHub.Application.Teams.DeleteTeam;
 using LigaHub.Application.Teams.GetTeamById;
 using LigaHub.Application.Teams.ListTeams;
 using LigaHub.Application.Teams.UpdateTeamName;
@@ -15,12 +16,14 @@ public sealed class TeamsController : ControllerBase
     private readonly GetTeamByIdUseCase _getByIdUseCase;
     private readonly ListTeamsUseCase _listUseCase;
     private readonly UpdateTeamNameUseCase _updateNameUseCase;
+    private readonly DeleteTeamUseCase _deleteUseCase;
 
     public TeamsController(
         CreateTeamUseCase createUseCase,
         GetTeamByIdUseCase getTeamByIdUse,
         ListTeamsUseCase listUseCase,
-        UpdateTeamNameUseCase updateNameUseCase)
+        UpdateTeamNameUseCase updateNameUseCase,
+        DeleteTeamUseCase deleteUseCase)
     {
         _createUseCase = createUseCase
             ?? throw new ArgumentNullException(nameof(createUseCase));
@@ -33,6 +36,9 @@ public sealed class TeamsController : ControllerBase
 
         _updateNameUseCase = updateNameUseCase
             ?? throw new ArgumentNullException(nameof(updateNameUseCase));
+
+        _deleteUseCase = deleteUseCase
+            ?? throw new ArgumentNullException(nameof(deleteUseCase));
     }
 
     [HttpGet]
@@ -189,5 +195,34 @@ public sealed class TeamsController : ControllerBase
         return Created(
             $"/api/organizations/{organizationId}/teams/{response.Id}",
             response);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAsync(
+        Guid organizationId,
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteTeamCommand(
+            organizationId,
+            id);
+
+        var deleted = await _deleteUseCase.ExecuteAsync(
+            command,
+            cancellationToken);
+
+        if (!deleted)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Team not found",
+                detail:
+                    $"Team '{id}' was not found in organization '{organizationId}'.");
+        }
+
+        return NoContent();
     }
 }

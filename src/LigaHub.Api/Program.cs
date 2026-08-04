@@ -7,6 +7,7 @@ using LigaHub.Application.Organizations.ListOrganizations;
 using LigaHub.Application.Organizations.UpdateOrganizationName;
 using LigaHub.Application.Teams;
 using LigaHub.Application.Teams.CreateTeam;
+using LigaHub.Application.Teams.DeleteTeam;
 using LigaHub.Application.Teams.GetTeamById;
 using LigaHub.Application.Teams.ListTeams;
 using LigaHub.Application.Teams.UpdateTeamName;
@@ -50,6 +51,7 @@ builder.Services.AddScoped<CreateTeamUseCase>();
 builder.Services.AddScoped<GetTeamByIdUseCase>();
 builder.Services.AddScoped<ListTeamsUseCase>();
 builder.Services.AddScoped<UpdateTeamNameUseCase>();
+builder.Services.AddScoped<DeleteTeamUseCase>();
 
 
 var app = builder.Build();

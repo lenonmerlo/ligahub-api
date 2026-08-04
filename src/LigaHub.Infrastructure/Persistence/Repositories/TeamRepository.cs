@@ -46,6 +46,15 @@ public sealed class TeamRepository : ITeamRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task DeleteAsync(
+        Team team,
+        CancellationToken cancellationToken = default)
+    {
+        _dbContext.Teams.Remove(team);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public Task<Team?> GetByIdAsync(
         Guid organizationId,
         Guid id,
