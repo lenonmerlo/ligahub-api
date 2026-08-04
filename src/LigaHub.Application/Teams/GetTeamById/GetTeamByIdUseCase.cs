@@ -29,6 +29,7 @@ public sealed class GetTeamByIdUseCase
         return new GetTeamByIdResult(
             team.Id,
             team.OrganizationId,
-            team.Name);
+            team.Name,
+            team.Sport);
     }
 }

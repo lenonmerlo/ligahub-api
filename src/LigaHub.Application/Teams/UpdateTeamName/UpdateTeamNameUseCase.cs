@@ -51,6 +51,7 @@ public sealed class UpdateTeamNameUseCase
         return new UpdateTeamNameResult(
             team.Id,
             team.OrganizationId,
-            team.Name);
+            team.Name,
+            team.Sport);
     }
 }
