@@ -1,4 +1,5 @@
 ﻿using LigaHub.Domain.Organizations;
+using LigaHub.Domain.Players;
 using LigaHub.Domain.Teams;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,9 @@ public sealed class LigaHubDbContext(
 
     public DbSet<Team> Teams =>
         Set<Team>();
+
+    public DbSet<Player> Players =>
+        Set<Player>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
