@@ -1,22 +1,38 @@
 ﻿using LigaHub.Application.Teams;
 using LigaHub.Domain.Teams;
 
-namespace LigaHub.Application.UnitTests.Teams.GetTeamById;
+namespace LigaHub.Application.UnitTests.Teams.UpdateTeamName;
 
 internal sealed class FakeTeamRepository : ITeamRepository
 {
     public Team? TeamToReturn { get; set; }
 
+    public bool NameExists { get; set; }
+
+    public Team? UpdatedTeam { get; private set; }
+
     public Guid? RequestedOrganizationId { get; private set; }
 
     public Guid? RequestedId { get; private set; }
+
+    public Guid? NameCheckOrganizationId { get; private set; }
+
+    public string? RequestedName { get; private set; }
+
+    public int UpdateCalls { get; private set; }
+
+    public int ExistsByNameCalls { get; private set; }
 
     public Task<bool> ExistsByNameAsync(
         Guid organizationId,
         string name,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(false);
+        NameCheckOrganizationId = organizationId;
+        RequestedName = name;
+        ExistsByNameCalls++;
+
+        return Task.FromResult(NameExists);
     }
 
     public Task AddAsync(
@@ -27,9 +43,12 @@ internal sealed class FakeTeamRepository : ITeamRepository
     }
 
     public Task UpdateAsync(
-    Team team,
-    CancellationToken cancellationToken = default)
+        Team team,
+        CancellationToken cancellationToken = default)
     {
+        UpdatedTeam = team;
+        UpdateCalls++;
+
         return Task.CompletedTask;
     }
 
@@ -45,14 +64,12 @@ internal sealed class FakeTeamRepository : ITeamRepository
     }
 
     public Task<IReadOnlyList<Team>> ListAsync(
-    Guid organizationId,
-    int skip,
-    int take,
-    CancellationToken cancellationToken = default)
+        Guid organizationId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<Team> teams = Array.Empty<Team>();
-
-        return Task.FromResult(teams);
+        return Task.FromResult<IReadOnlyList<Team>>([]);
     }
 
     public Task<int> CountAsync(
