@@ -5,6 +5,8 @@ using LigaHub.Application.Organizations.DeleteOrganization;
 using LigaHub.Application.Organizations.GetOrganizationById;
 using LigaHub.Application.Organizations.ListOrganizations;
 using LigaHub.Application.Organizations.UpdateOrganizationName;
+using LigaHub.Application.Players;
+using LigaHub.Application.Players.CreatePlayer;
 using LigaHub.Application.Teams;
 using LigaHub.Application.Teams.CreateTeam;
 using LigaHub.Application.Teams.DeleteTeam;
@@ -41,6 +43,10 @@ builder.Services.AddScoped<
     ITeamRepository,
     TeamRepository>();
 
+builder.Services.AddScoped<
+    IPlayerRepository,
+    PlayerRepository>();
+
 builder.Services.AddScoped<CreateOrganizationUseCase>();
 builder.Services.AddScoped<GetOrganizationByIdUseCase>();
 builder.Services.AddScoped<ListOrganizationsUseCase>();
@@ -53,6 +59,7 @@ builder.Services.AddScoped<ListTeamsUseCase>();
 builder.Services.AddScoped<UpdateTeamNameUseCase>();
 builder.Services.AddScoped<DeleteTeamUseCase>();
 
+builder.Services.AddScoped<CreatePlayerUseCase>();
 
 var app = builder.Build();
 app.UseExceptionHandler();
