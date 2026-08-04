@@ -2,6 +2,7 @@
 using LigaHub.Application.Teams.CreateTeam;
 using LigaHub.Application.Teams.GetTeamById;
 using LigaHub.Application.Teams.ListTeams;
+using LigaHub.Application.Teams.UpdateTeamName;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LigaHub.Api.Controllers;
@@ -13,11 +14,13 @@ public sealed class TeamsController : ControllerBase
     private readonly CreateTeamUseCase _createUseCase;
     private readonly GetTeamByIdUseCase _getByIdUseCase;
     private readonly ListTeamsUseCase _listUseCase;
+    private readonly UpdateTeamNameUseCase _updateNameUseCase;
 
     public TeamsController(
         CreateTeamUseCase createUseCase,
         GetTeamByIdUseCase getTeamByIdUse,
-        ListTeamsUseCase listUseCase)
+        ListTeamsUseCase listUseCase,
+        UpdateTeamNameUseCase updateNameUseCase)
     {
         _createUseCase = createUseCase
             ?? throw new ArgumentNullException(nameof(createUseCase));
@@ -27,6 +30,9 @@ public sealed class TeamsController : ControllerBase
 
         _listUseCase = listUseCase
             ?? throw new ArgumentNullException(nameof(listUseCase));
+
+        _updateNameUseCase = updateNameUseCase
+            ?? throw new ArgumentNullException(nameof(updateNameUseCase));
     }
 
     [HttpGet]
@@ -104,6 +110,46 @@ public sealed class TeamsController : ControllerBase
             result.OrganizationId,
             result.Name));
     }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType<UpdateTeamNameResponse>(
+        StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<UpdateTeamNameResponse>> UpdateNameAsync(
+        Guid organizationId,
+        Guid id,
+        [FromBody] UpdateTeamNameRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTeamNameCommand(
+            organizationId,
+            id,
+            request.Name);
+
+        var result = await _updateNameUseCase.ExecuteAsync(
+            command,
+            cancellationToken);
+
+        if (result is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Team not found",
+                detail:
+                    $"Team '{id}' was not found in organization '{organizationId}'.");
+        }
+
+        return Ok(new UpdateTeamNameResponse(
+            result.Id,
+            result.OrganizationId,
+            result.Name));
+    }
+
 
     [HttpPost]
     [ProducesResponseType<CreateTeamResponse>(
