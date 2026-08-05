@@ -29,7 +29,10 @@ public sealed class CreatePlayerUseCase
 
         var player = Player.Create(
             command.TeamId,
-            command.Name);
+            command.Name,
+            command.BirthDate,
+            command.Sex,
+            command.JerseyNumber);
 
         var team = await _teamRepository.GetByIdAsync(
             command.OrganizationId,
@@ -41,16 +44,16 @@ public sealed class CreatePlayerUseCase
             return null;
         }
 
-        var nameAlreadyExists =
-            await _playerRepository.ExistsByNameAsync(
+        var jerseyNumberAlreadyExists =
+            await _playerRepository.ExistsByJerseyNumberAsync(
                 player.TeamId,
-                player.Name,
+                player.JerseyNumber,
                 cancellationToken);
 
-        if (nameAlreadyExists)
+        if (jerseyNumberAlreadyExists)
         {
-            throw new PlayerNameAlreadyExistsException(
-                player.Name);
+            throw new PlayerJerseyNumberAlreadyExistsException(
+                player.JerseyNumber);
         }
 
         await _playerRepository.AddAsync(
@@ -60,6 +63,9 @@ public sealed class CreatePlayerUseCase
         return new CreatePlayerResult(
             player.Id,
             player.TeamId,
-            player.Name);
+            player.Name,
+            player.BirthDate,
+            player.Sex,
+            player.JerseyNumber);
     }
 }

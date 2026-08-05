@@ -4,9 +4,9 @@ namespace LigaHub.Application.Players;
 
 public interface IPlayerRepository
 {
-    Task<bool> ExistsByNameAsync(
+    Task<bool> ExistsByJerseyNumberAsync(
         Guid teamId,
-        string name,
+        int jerseyNumber,
         CancellationToken cancellationToken = default);
 
     Task AddAsync(

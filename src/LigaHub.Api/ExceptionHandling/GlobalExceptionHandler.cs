@@ -33,9 +33,9 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             "Team name conflict",
             exception.Message),
 
-            PlayerNameAlreadyExistsException => (
+            PlayerJerseyNumberAlreadyExistsException => (
             StatusCodes.Status409Conflict,
-            "Player name conflict",
+            "Player jersey number conflict",
             exception.Message),
 
             ArgumentException => (

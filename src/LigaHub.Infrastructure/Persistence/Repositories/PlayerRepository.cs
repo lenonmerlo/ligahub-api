@@ -14,15 +14,15 @@ public sealed class PlayerRepository : IPlayerRepository
             ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public Task<bool> ExistsByNameAsync(
+    public Task<bool> ExistsByJerseyNumberAsync(
         Guid teamId,
-        string name,
+        int jerseyNumber,
         CancellationToken cancellationToken = default)
     {
         return _dbContext.Players.AnyAsync(
             player =>
                 player.TeamId == teamId &&
-                player.Name == name,
+                player.JerseyNumber == jerseyNumber,
             cancellationToken);
     }
 
