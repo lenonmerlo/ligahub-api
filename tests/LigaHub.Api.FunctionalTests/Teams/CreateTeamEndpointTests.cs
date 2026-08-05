@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Api.Contracts.Teams;
 using LigaHub.Api.FunctionalTests.Database;
+using LigaHub.Api.FunctionalTests;
+using LigaHub.Domain.Teams;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LigaHub.Api.FunctionalTests.Teams;
@@ -23,20 +25,22 @@ public sealed class CreateTeamEndpointTests
     {
         var organization = await CreateOrganizationAsync();
         var request = new CreateTeamRequest(
-            $"Time {Guid.NewGuid():N}");
+            $"Time {Guid.NewGuid():N}",
+            Sport.Basketball);
 
         var response = await _client.PostAsJsonAsync(
             $"/api/organizations/{organization.Id}/teams",
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<CreateTeamResponse>();
+            .ReadFromApiJsonAsync<CreateTeamResponse>();
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(content);
         Assert.NotEqual(Guid.Empty, content.Id);
         Assert.Equal(organization.Id, content.OrganizationId);
         Assert.Equal(request.Name, content.Name);
+        Assert.Equal(Sport.Basketball, content.Sport);
         Assert.Equal(
             $"/api/organizations/{organization.Id}/teams/{content.Id}",
             response.Headers.Location?.ToString());

@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Api.Contracts.Teams;
+using LigaHub.Api.FunctionalTests;
 using LigaHub.Api.FunctionalTests.Database;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,23 +32,25 @@ public sealed class UpdateTeamNameEndpointTests
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<UpdateTeamNameResponse>();
+            .ReadFromApiJsonAsync<UpdateTeamNameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(content);
         Assert.Equal(team.Id, content.Id);
         Assert.Equal(organization.Id, content.OrganizationId);
         Assert.Equal(request.Name, content.Name);
+        Assert.Equal(team.Sport, content.Sport);
 
         var getResponse = await _client.GetAsync(
             $"/api/organizations/{organization.Id}/teams/{team.Id}");
 
         var persistedTeam = await getResponse.Content
-            .ReadFromJsonAsync<GetTeamByIdResponse>();
+            .ReadFromApiJsonAsync<GetTeamByIdResponse>();
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(persistedTeam);
         Assert.Equal(request.Name, persistedTeam.Name);
+        Assert.Equal(team.Sport, persistedTeam.Sport);
     }
 
     [Fact]
@@ -144,13 +147,14 @@ public sealed class UpdateTeamNameEndpointTests
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<UpdateTeamNameResponse>();
+            .ReadFromApiJsonAsync<UpdateTeamNameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(content);
         Assert.Equal(firstTeam.Id, content.Id);
         Assert.Equal(firstOrganization.Id, content.OrganizationId);
         Assert.Equal(secondTeam.Name, content.Name);
+        Assert.Equal(firstTeam.Sport, content.Sport);
     }
 
     private async Task<CreateOrganizationResponse> CreateOrganizationAsync()
@@ -182,7 +186,7 @@ public sealed class UpdateTeamNameEndpointTests
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<CreateTeamResponse>();
+            .ReadFromApiJsonAsync<CreateTeamResponse>();
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(content);

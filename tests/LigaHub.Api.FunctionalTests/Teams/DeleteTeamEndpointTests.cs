@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Api.Contracts.Teams;
+using LigaHub.Api.FunctionalTests;
 using LigaHub.Api.FunctionalTests.Database;
 using Microsoft.AspNetCore.Mvc;
 
@@ -104,7 +105,7 @@ public sealed class DeleteTeamEndpointTests
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<CreateTeamResponse>();
+            .ReadFromApiJsonAsync<CreateTeamResponse>();
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(content);

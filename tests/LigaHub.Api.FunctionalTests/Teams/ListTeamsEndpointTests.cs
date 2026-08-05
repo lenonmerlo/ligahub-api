@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using LigaHub.Api.Contracts.Organizations;
 using LigaHub.Api.Contracts.Teams;
+using LigaHub.Api.FunctionalTests;
 using LigaHub.Api.FunctionalTests.Database;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +38,7 @@ public sealed class ListTeamsEndpointTests
             $"/api/organizations/{organization.Id}/teams?page=1&pageSize=2");
 
         var content = await response.Content
-            .ReadFromJsonAsync<ListTeamsResponse>();
+            .ReadFromApiJsonAsync<ListTeamsResponse>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(content);
@@ -56,6 +57,7 @@ public sealed class ListTeamsEndpointTests
             {
                 Assert.Equal(secondTeam.Id, item.Id);
                 Assert.Equal(secondTeam.Name, item.Name);
+                Assert.Equal(secondTeam.Sport, item.Sport);
             });
     }
 
@@ -68,7 +70,7 @@ public sealed class ListTeamsEndpointTests
             $"/api/organizations/{organization.Id}/teams");
 
         var content = await response.Content
-            .ReadFromJsonAsync<ListTeamsResponse>();
+            .ReadFromApiJsonAsync<ListTeamsResponse>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(content);
@@ -138,7 +140,7 @@ public sealed class ListTeamsEndpointTests
             request);
 
         var content = await response.Content
-            .ReadFromJsonAsync<CreateTeamResponse>();
+            .ReadFromApiJsonAsync<CreateTeamResponse>();
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(content);
