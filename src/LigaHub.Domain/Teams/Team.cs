@@ -8,21 +8,36 @@ public sealed class Team
 
     public Guid OrganizationId { get; }
 
+    public Sport Sport { get; }
+
     public string Name { get; private set; }
 
     private Team(
         Guid id,
         Guid organizationId,
-        string name)
+        string name,
+        Sport sport)
     {
         Id = id;
         OrganizationId = organizationId;
         Name = name;
+        Sport = sport;
     }
 
     public static Team Create(
         Guid organizationId,
         string name)
+    {
+        return Create(
+            organizationId,
+            name,
+            Sport.Volleyball);
+    }
+
+    public static Team Create(
+        Guid organizationId,
+        string name,
+        Sport sport)
     {
         if (organizationId == Guid.Empty)
         {
@@ -31,10 +46,18 @@ public sealed class Team
                 nameof(organizationId));
         }
 
+        if (!Enum.IsDefined(sport))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(sport),
+                "Sport is invalid.");
+        }
+
         return new Team(
             Guid.NewGuid(),
             organizationId,
-            NormalizeName(name));
+            NormalizeName(name),
+            sport);
     }
 
     public void Rename(string name)

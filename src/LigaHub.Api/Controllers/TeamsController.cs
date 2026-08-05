@@ -74,7 +74,8 @@ public sealed class TeamsController : ControllerBase
         var items = result.Items
             .Select(item => new TeamListItemResponse(
                 item.Id,
-                item.Name))
+                item.Name,
+                item.Sport))
             .ToArray();
 
         return Ok(new ListTeamsResponse(
@@ -114,7 +115,8 @@ public sealed class TeamsController : ControllerBase
         return Ok(new GetTeamByIdResponse(
             result.Id,
             result.OrganizationId,
-            result.Name));
+            result.Name,
+            result.Sport));
     }
 
     [HttpPut("{id:guid}")]
@@ -153,7 +155,8 @@ public sealed class TeamsController : ControllerBase
         return Ok(new UpdateTeamNameResponse(
             result.Id,
             result.OrganizationId,
-            result.Name));
+            result.Name,
+            result.Sport));
     }
 
 
@@ -173,7 +176,8 @@ public sealed class TeamsController : ControllerBase
     {
         var command = new CreateTeamCommand(
             organizationId,
-            request.Name);
+            request.Name,
+            request.Sport);
 
         var result = await _createUseCase.ExecuteAsync(
             command,
@@ -190,7 +194,8 @@ public sealed class TeamsController : ControllerBase
         var response = new CreateTeamResponse(
             result.Id,
             result.OrganizationId,
-            result.Name);
+            result.Name,
+            result.Sport);
 
         return Created(
             $"/api/organizations/{organizationId}/teams/{response.Id}",

@@ -18,6 +18,12 @@ internal sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         builder.Property(team => team.OrganizationId).IsRequired();
 
+        builder.Property(team => team.Sport)
+            .HasConversion<int>()
+            .HasDefaultValue(Sport.Volleyball)
+            .HasSentinel((Sport)0)
+            .IsRequired();
+
         builder.Property(team => team.Name)
             .HasMaxLength(Team.MaxNameLength)
             .IsRequired();

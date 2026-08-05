@@ -80,7 +80,8 @@ public sealed class ListTeamsUseCase
         var items = teams
             .Select(team => new TeamListItem(
                 team.Id,
-                team.Name))
+                team.Name,
+                team.Sport))
             .ToArray();
 
         var totalPages = (int)Math.Ceiling(
