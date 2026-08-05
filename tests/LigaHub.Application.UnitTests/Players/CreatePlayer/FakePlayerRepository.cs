@@ -38,4 +38,12 @@ internal sealed class FakePlayerRepository : IPlayerRepository
 
         return Task.CompletedTask;
     }
+
+    public Task<Player?> GetByIdAsync(
+    Guid teamId,
+    Guid id,
+    CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<Player?>(null);
+    }
 }

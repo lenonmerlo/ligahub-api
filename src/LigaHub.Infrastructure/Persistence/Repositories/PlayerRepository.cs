@@ -36,4 +36,16 @@ public sealed class PlayerRepository : IPlayerRepository
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public Task<Player?> GetByIdAsync(
+        Guid teamId,
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Players.SingleOrDefaultAsync(
+            player =>
+                player.TeamId == teamId &&
+                player.Id == id,
+            cancellationToken);
+    }
 }

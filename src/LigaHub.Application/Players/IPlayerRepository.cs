@@ -12,4 +12,9 @@ public interface IPlayerRepository
     Task AddAsync(
         Player player,
         CancellationToken cancellationToken = default);
+
+    Task<Player?> GetByIdAsync(
+        Guid teamId,
+        Guid id,
+        CancellationToken cancellationToken = default);
 }
