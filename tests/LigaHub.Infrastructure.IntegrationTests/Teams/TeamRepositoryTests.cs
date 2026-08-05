@@ -185,7 +185,8 @@ public sealed class TeamRepositoryTests
             $"Liga {Guid.NewGuid():N}");
         var team = Team.Create(
             organization.Id,
-            $"Time {Guid.NewGuid():N}");
+            $"Time {Guid.NewGuid():N}",
+            Sport.Basketball);
 
         await using (var dbContext = await CreateDbContextAsync())
         {
@@ -208,6 +209,7 @@ public sealed class TeamRepositoryTests
         Assert.Equal(team.Id, persistedTeam.Id);
         Assert.Equal(organization.Id, persistedTeam.OrganizationId);
         Assert.Equal(team.Name, persistedTeam.Name);
+        Assert.Equal(Sport.Basketball, persistedTeam.Sport);
     }
 
     [Fact]
