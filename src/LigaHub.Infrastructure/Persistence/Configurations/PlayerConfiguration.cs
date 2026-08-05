@@ -25,10 +25,21 @@ internal sealed class PlayerConfiguration
             .HasMaxLength(Player.MaxNameLength)
             .IsRequired();
 
+        builder.Property(player => player.BirthDate)
+            .HasColumnType("date")
+            .IsRequired();
+
+        builder.Property(player => player.Sex)
+            .HasConversion<int>()
+            .IsRequired();
+
+        builder.Property(player => player.JerseyNumber)
+            .IsRequired();
+
         builder.HasIndex(player => new
         {
             player.TeamId,
-            player.Name
+            player.JerseyNumber
         }).IsUnique();
 
         builder.HasOne<Team>()

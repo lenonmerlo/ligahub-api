@@ -35,7 +35,10 @@ public sealed class PlayersController : ControllerBase
         var command = new CreatePlayerCommand(
             organizationId,
             teamId,
-            request.Name);
+            request.Name,
+            request.BirthDate,
+            request.Sex,
+            request.JerseyNumber);
 
         var result = await _createUseCase.ExecuteAsync(
             command,
@@ -52,7 +55,10 @@ public sealed class PlayersController : ControllerBase
         var response = new CreatePlayerResponse(
             result.Id,
             result.TeamId,
-            result.Name);
+            result.Name,
+            result.BirthDate,
+            result.Sex,
+            result.JerseyNumber);
 
         return Created(
             $"/api/organizations/{organizationId}/teams/{teamId}/players/{response.Id}",

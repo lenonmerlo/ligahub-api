@@ -28,7 +28,10 @@ public sealed class PlayerRepositoryTests
             $"Time {Guid.NewGuid():N}");
         var player = Player.Create(
             team.Id,
-            $"Jogador {Guid.NewGuid():N}");
+            $"Jogador {Guid.NewGuid():N}",
+            new DateOnly(2000, 1, 1),
+            Sex.Male,
+            10);
 
         await using (var dbContext = await CreateDbContextAsync())
         {
@@ -52,10 +55,15 @@ public sealed class PlayerRepositoryTests
         Assert.Equal(player.Id, persistedPlayer.Id);
         Assert.Equal(team.Id, persistedPlayer.TeamId);
         Assert.Equal(player.Name, persistedPlayer.Name);
+        Assert.Equal(player.BirthDate, persistedPlayer.BirthDate);
+        Assert.Equal(player.Sex, persistedPlayer.Sex);
+        Assert.Equal(
+            player.JerseyNumber,
+            persistedPlayer.JerseyNumber);
     }
 
     [Fact]
-    public async Task ExistsByNameAsync_ShouldScopeNameToTeam()
+    public async Task ExistsByJerseyNumberAsync_ShouldScopeNumberToTeam()
     {
         var organization = Organization.Create(
             $"Liga {Guid.NewGuid():N}");
@@ -65,10 +73,12 @@ public sealed class PlayerRepositoryTests
         var secondTeam = Team.Create(
             organization.Id,
             $"Time B {Guid.NewGuid():N}");
-        var playerName = $"Jogador {Guid.NewGuid():N}";
         var player = Player.Create(
             firstTeam.Id,
-            playerName);
+            $"Jogador {Guid.NewGuid():N}",
+            new DateOnly(2000, 1, 1),
+            Sex.Female,
+            7);
 
         await using var dbContext = await CreateDbContextAsync();
 
@@ -83,17 +93,93 @@ public sealed class PlayerRepositoryTests
         await repository.AddAsync(player);
 
         var foundInFirstTeam =
-            await repository.ExistsByNameAsync(
+            await repository.ExistsByJerseyNumberAsync(
                 firstTeam.Id,
-                playerName);
+                player.JerseyNumber);
 
         var foundInSecondTeam =
-            await repository.ExistsByNameAsync(
+            await repository.ExistsByJerseyNumberAsync(
                 secondTeam.Id,
-                playerName);
+                player.JerseyNumber);
 
         Assert.True(foundInFirstTeam);
         Assert.False(foundInSecondTeam);
+    }
+
+    [Fact]
+    public async Task AddAsync_ShouldAllowSameNameWithDifferentJerseyNumbers()
+    {
+        var organization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var team = Team.Create(
+            organization.Id,
+            $"Time {Guid.NewGuid():N}");
+        var playerName = $"Jogador {Guid.NewGuid():N}";
+        var firstPlayer = Player.Create(
+            team.Id,
+            playerName,
+            new DateOnly(2000, 1, 1),
+            Sex.Male,
+            8);
+        var secondPlayer = Player.Create(
+            team.Id,
+            playerName,
+            new DateOnly(2001, 2, 2),
+            Sex.Female,
+            9);
+
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.AddAsync(organization);
+        await dbContext.Teams.AddAsync(team);
+        await dbContext.SaveChangesAsync();
+
+        var repository = new PlayerRepository(dbContext);
+
+        await repository.AddAsync(firstPlayer);
+        await repository.AddAsync(secondPlayer);
+
+        var persistedPlayers = await dbContext.Players
+            .AsNoTracking()
+            .Where(player => player.TeamId == team.Id)
+            .ToArrayAsync();
+
+        Assert.Equal(2, persistedPlayers.Length);
+    }
+
+    [Fact]
+    public async Task AddAsync_ShouldRejectSameJerseyNumberInSameTeam()
+    {
+        var organization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var team = Team.Create(
+            organization.Id,
+            $"Time {Guid.NewGuid():N}");
+        var firstPlayer = Player.Create(
+            team.Id,
+            $"Jogador A {Guid.NewGuid():N}",
+            new DateOnly(2000, 1, 1),
+            Sex.Male,
+            10);
+        var secondPlayer = Player.Create(
+            team.Id,
+            $"Jogador B {Guid.NewGuid():N}",
+            new DateOnly(2001, 2, 2),
+            Sex.Female,
+            10);
+
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.AddAsync(organization);
+        await dbContext.Teams.AddAsync(team);
+        await dbContext.SaveChangesAsync();
+
+        var repository = new PlayerRepository(dbContext);
+
+        await repository.AddAsync(firstPlayer);
+
+        await Assert.ThrowsAsync<DbUpdateException>(
+            () => repository.AddAsync(secondPlayer));
     }
 
     private async Task<LigaHubDbContext> CreateDbContextAsync()
