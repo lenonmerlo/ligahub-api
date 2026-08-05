@@ -5,11 +5,11 @@ namespace LigaHub.Application.UnitTests.Players.CreatePlayer;
 
 internal sealed class FakePlayerRepository : IPlayerRepository
 {
-    public bool NameExists { get; set; }
+    public bool JerseyNumberExists { get; set; }
 
     public Guid? RequestedTeamId { get; private set; }
 
-    public string? RequestedName { get; private set; }
+    public int? RequestedJerseyNumber { get; private set; }
 
     public Player? AddedPlayer { get; private set; }
 
@@ -17,16 +17,16 @@ internal sealed class FakePlayerRepository : IPlayerRepository
 
     public int AddCalls { get; private set; }
 
-    public Task<bool> ExistsByNameAsync(
+    public Task<bool> ExistsByJerseyNumberAsync(
         Guid teamId,
-        string name,
+        int jerseyNumber,
         CancellationToken cancellationToken = default)
     {
         RequestedTeamId = teamId;
-        RequestedName = name;
+        RequestedJerseyNumber = jerseyNumber;
         ExistsCalls++;
 
-        return Task.FromResult(NameExists);
+        return Task.FromResult(JerseyNumberExists);
     }
 
     public Task AddAsync(
