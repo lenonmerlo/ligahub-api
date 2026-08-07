@@ -19,6 +19,56 @@ public sealed class PlayerRepositoryTests
     }
 
     [Fact]
+    public async Task GetByIdAsync_ShouldScopePlayerToTeam()
+    {
+        var organization = Organization.Create(
+            $"Liga {Guid.NewGuid():N}");
+        var firstTeam = Team.Create(
+            organization.Id,
+            $"Time A {Guid.NewGuid():N}");
+        var secondTeam = Team.Create(
+            organization.Id,
+            $"Time B {Guid.NewGuid():N}");
+        var player = Player.Create(
+            firstTeam.Id,
+            $"Jogador {Guid.NewGuid():N}",
+            new DateOnly(2000, 1, 1),
+            Sex.Male,
+            10);
+
+        await using var dbContext = await CreateDbContextAsync();
+
+        await dbContext.Organizations.AddAsync(organization);
+        await dbContext.Teams.AddRangeAsync(
+            firstTeam,
+            secondTeam);
+        await dbContext.SaveChangesAsync();
+
+        var repository = new PlayerRepository(dbContext);
+
+        await repository.AddAsync(player);
+
+        var foundInFirstTeam = await repository.GetByIdAsync(
+            firstTeam.Id,
+            player.Id);
+
+        var foundInSecondTeam = await repository.GetByIdAsync(
+            secondTeam.Id,
+            player.Id);
+
+        Assert.NotNull(foundInFirstTeam);
+        Assert.Equal(player.Id, foundInFirstTeam.Id);
+        Assert.Equal(firstTeam.Id, foundInFirstTeam.TeamId);
+        Assert.Equal(player.Name, foundInFirstTeam.Name);
+        Assert.Equal(player.BirthDate, foundInFirstTeam.BirthDate);
+        Assert.Equal(player.Sex, foundInFirstTeam.Sex);
+        Assert.Equal(
+            player.JerseyNumber,
+            foundInFirstTeam.JerseyNumber);
+        Assert.Null(foundInSecondTeam);
+    }
+
+    [Fact]
     public async Task AddAsync_ShouldPersistPlayer()
     {
         var organization = Organization.Create(
