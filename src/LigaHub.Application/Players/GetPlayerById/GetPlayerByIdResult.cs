@@ -7,5 +7,5 @@ public sealed record GetPlayerByIdResult(
     Guid TeamId,
     string Name,
     DateOnly BirthDate,
-    Sex sex,
+    Sex Sex,
     int JerseyNumber);
